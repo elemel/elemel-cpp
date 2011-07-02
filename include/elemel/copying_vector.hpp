@@ -23,6 +23,7 @@
 
 #include <cassert>
 #include <iterator>
+#include <stdexcept>
 
 namespace elemel {
     template <class T, class Allocator = std::allocator<T> >
@@ -49,7 +50,7 @@ namespace elemel {
             allocator_(allocator)
         { }
 
-        explicit copying_vector(std::size_t n,
+        explicit copying_vector(size_type n,
                                 value_type const &value = value_type(),
                                 allocator_type const &allocator = allocator_type()) :
             begin_(0),
@@ -144,19 +145,19 @@ namespace elemel {
         }
 
         // Exception safety: No-throw guarantee.
-        std::size_t size() const
+        size_type size() const
         {
             return end_ - begin_;
         }
 
         // Exception safety: No-throw guarantee.
-        std::size_t max_size() const
+        size_type max_size() const
         {
-            return std::numeric_limits<std::size_t>::max() / sizeof(value_type);
+            return std::numeric_limits<size_type>::max() / sizeof(value_type);
         }
 
         // Exception safety: Basic guarantee.
-        void resize(std::size_t n, value_type const &value)
+        void resize(size_type n, value_type const &value)
         {
             if (size() < n) {
                 reserve(n);
@@ -172,7 +173,7 @@ namespace elemel {
         }
 
         // Exception safety: No-throw guarantee.
-        std::size_t capacity() const
+        size_type capacity() const
         {
             return capacity_ - begin_;
         }
@@ -184,7 +185,7 @@ namespace elemel {
         }
 
         // Exception safety: Strong guarantee.
-        void reserve(std::size_t n)
+        void reserve(size_type n)
         {
             if (capacity() < n) {
                 if (begin_) {
@@ -222,28 +223,86 @@ namespace elemel {
             }
         }
 
-        // Exception safety: Basic guarantee.
-        iterator insert(iterator i, value_type const &value)
+        reference front()
         {
-            if (i == end_) {
+            assert(!empty());
+            return *begin_;
+        }
+
+        const_reference front() const
+        {
+            assert(!empty());
+            return *begin_;
+        }
+
+        reference back()
+        {
+            assert(!empty());
+            return *(end_ - 1);
+        }
+
+        const_reference back() const
+        {
+            assert(!empty());
+            return *(end_ - 1);
+        }
+
+        // Exception safety: Strong guarantee.
+        reference at(size_type index)
+        {
+            if (index < size()) {
+                return *(begin_ + index);
+            } else {
+                throw std::out_of_range("index out of range");
+            }
+        }
+
+        // Exception safety: Strong guarantee.
+        const_reference at(size_type index) const
+        {
+            if (index < size()) {
+                return *(begin_ + index);
+            } else {
+                throw std::out_of_range("index out of range");
+            }
+        }
+
+        // Exception safety: No-throw guarantee.
+        reference operator[](size_type index)
+        {
+            assert(index < size());
+            return *(begin_ + index);
+        }
+
+        // Exception safety: No-throw guarantee.
+        const_reference operator[](size_type index) const
+        {
+            assert(index < size());
+            return *(begin_ + index);
+        }
+
+        // Exception safety: Basic guarantee.
+        iterator insert(iterator position, value_type const &value)
+        {
+            if (position == end_) {
                 push_back(value);
                 return end_ - 1;
             } else if (size() == capacity()) {
                 copying_vector temp(allocator_);
                 temp.auto_reserve(size() + 1);
-                temp.insert(temp.end_, begin_, i);
+                temp.insert(temp.end_, begin_, position);
                 temp.push_back(value);
-                temp.insert(temp.end_, i, end_);
+                temp.insert(temp.end_, position, end_);
                 swap(temp);
-                return begin_ + (i - temp.begin_);
+                return begin_ + (position - temp.begin_);
             } else {
                 iterator j = end_;
                 try {
                     do {
                         allocator_.construct(j, *(j - 1));
                         allocator_.destroy(--j);
-                    } while (j != i);
-                    allocator_.construct(i, value);
+                    } while (j != position);
+                    allocator_.construct(position, value);
                 } catch (...) {
                     while (end_ != j) {
                         allocator_.destroy(end_);
@@ -252,7 +311,7 @@ namespace elemel {
                     throw;
                 }
                 ++end_;
-                return i;
+                return position;
             }
         }
 
@@ -299,11 +358,12 @@ namespace elemel {
         value_type *capacity_;
         allocator_type allocator_;
 
-        void auto_reserve(std::size_t n)
+        void auto_reserve(size_type n)
         {
-            std::size_t m = capacity();
+            size_type m = capacity();
             if (m < n) {
                 do {
+                    // Grow by Golden Ratio.
                     m = m * 233 / 144 + 1;
                 } while (m < n);
                 reserve(m);
