@@ -5,6 +5,6 @@
 
 int main(int argc, char *argv[])
 {
-    assert(elemel::string_ptr("foo") == "foo");
+    assert(elemel::string_ptr("foo") == elemel::string_ptr("foo"));
     return 0;
 }

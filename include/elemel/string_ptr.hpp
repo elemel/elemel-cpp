@@ -10,13 +10,13 @@
 
 namespace elemel {
     namespace detail {
-        template <class T, class RefCount, class RawAllocator>
+        template <class Char, class RefCount, class RawAlloc>
         class string_header {
         public:
-            typedef T value_type;
+            typedef Char value_type;
             typedef std::size_t size_type;
             typedef RefCount ref_count_type;
-            typedef RawAllocator raw_allocator_type;
+            typedef RawAlloc raw_allocator_type;
     
             static ref_ptr<string_header>
             create(value_type const *str, size_type n,
@@ -73,15 +73,16 @@ namespace elemel {
     }
 
     template <
-        class T,
+        class Char,
+        class Traits = std::char_traits<Char>,
         class RefCount = int,
-        class RawAllocator = raw_new_allocator
+        class RawAlloc = raw_new_allocator
     >
     class basic_string_ptr {
     public:
-        typedef T value_type;
+        typedef Char value_type;
         typedef RefCount ref_count_type;
-        typedef RawAllocator raw_allocator_type;
+        typedef RawAlloc raw_allocator_type;
         typedef detail::string_header<value_type, ref_count_type, raw_allocator_type>
             header_type;
         typedef std::size_t size_type;
@@ -139,43 +140,51 @@ namespace elemel {
         ref_ptr<header_type> header_;
     };
 
-    template <class T, class C, class A>
-    bool operator==(basic_string_ptr<T, C, A> const &left,
-                    basic_string_ptr<T, C, A> const &right)
+    template <class C, class T, class R, class A>
+    bool operator==(basic_string_ptr<C, T, R, A> const &left,
+                    basic_string_ptr<C, T, R, A> const &right)
     {
         return (left.size() == right.size() &&
-                std::equal(left.begin(), left.end(), right.begin()));
+                std::equal(left.begin(), left.end(), right.begin(), T::eq));
     }
 
-    template <class T, class C, class A>
-    bool operator!=(basic_string_ptr<T, C, A> const &left,
-                    basic_string_ptr<T, C, A> const &right)
+    template <class C, class T, class R, class A>
+    bool operator!=(basic_string_ptr<C, T, R, A> const &left,
+                    basic_string_ptr<C, T, R, A> const &right)
     {
         return !(left == right);
     }
 
-    template <class T, class C, class A>
-    bool operator==(basic_string_ptr<T, C, A> const &left, T const *right)
+    template <class C, class T, class R, class A>
+    bool operator<(basic_string_ptr<C, T, R, A> const &left,
+                   basic_string_ptr<C, T, R, A> const &right)
+    {
+        return std::lexicographical_compare(left.begin(), left.end(),
+                                            right.begin(), right.end(), T::lt);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator==(basic_string_ptr<C, T, R, A> const &left, C const *right)
     {
         std::size_t n = find_terminator(right) - right;
         return left.size() == n && std::equal(left.begin(), left.end(), right);
     }
 
-    template <class T, class C, class A>
-    bool operator!=(basic_string_ptr<T, C, A> const &left, T const *right)
+    template <class C, class T, class R, class A>
+    bool operator!=(basic_string_ptr<C, T, R, A> const &left, C const *right)
     {
         return !(left == right);
     }
 
-    template <class T, class C, class A>
-    bool operator==(T const *left, basic_string_ptr<T, C, A> const &right)
+    template <class C, class T, class R, class A>
+    bool operator==(C const *left, basic_string_ptr<C, T, R, A> const &right)
     {
         std::size_t n = find_terminator(left) - left;
         return n == right.size() && std::equal(left, left + n, right.begin());
     }
 
-    template <class T, class C, class A>
-    bool operator!=(T const *left, basic_string_ptr<T, C, A> const &right)
+    template <class C, class T, class R, class A>
+    bool operator!=(C const *left, basic_string_ptr<C, T, R, A> const &right)
     {
         return !(left == right);
     }
