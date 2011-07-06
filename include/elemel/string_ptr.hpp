@@ -136,7 +136,7 @@ namespace elemel {
         }
 
     private:
-        mutable ref_ptr<header_type> header_;
+        ref_ptr<header_type> header_;
     };
 
     template <class T, class C, class A>
