@@ -87,9 +87,6 @@ namespace elemel {
         typedef std::size_t size_type;
         typedef value_type *const_iterator;
 
-        basic_string_ptr()
-        { }
-
         explicit basic_string_ptr(raw_allocator_type const &alloc =
                                   raw_allocator_type())
         {
@@ -115,30 +112,27 @@ namespace elemel {
 
         size_type size() const
         {
-            return header_ ? header_->size() : 0;
+            return header_->size();
         }
 
         value_type const *data() const
         {
-            return header_ ? header_->data() : 0;
+            return header_->data();
         }
 
         value_type const *c_str() const
         {
-            if (header_.get() == 0) {
-                header_ = header_type::create(0, 0, raw_allocator_type());
-            }
             return header_->data();
         }
 
         const_iterator begin() const
         {
-            return header_ ? header_->data() : 0;
+            return header_->data();
         }
 
         const_iterator end() const
         {
-            return header_ ? header_->data() + header_->size() : 0;
+            return header_->data() + header_->size();
         }
 
     private:
