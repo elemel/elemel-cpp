@@ -7,10 +7,10 @@
 #include <string>
 
 namespace elemel {
-    template <class T, class Traits = std::char_traits<T> >
+    template <class Char, class Traits = std::char_traits<Char> >
     class basic_string_range {
     public:
-        typedef T value_type;
+        typedef Char value_type;
         typedef Traits traits_type;
         typedef std::size_t size_type;
         typedef value_type const *const_pointer;
@@ -56,120 +56,118 @@ namespace elemel {
         const_pointer last_;
     };
 
-    template <class T, class Traits>
-    bool operator==(basic_string_range<T, Traits> const &left,
-                    basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator==(basic_string_range<C, T> const &left,
+                    basic_string_range<C, T> const &right)
     {
         return (left.size() == right.size() &&
-                std::equal(left.begin(), left.end(), right.begin(),
-                           Traits::eq));
+                std::equal(left.begin(), left.end(), right.begin(), T::eq));
     }
 
-    template <class T, class Traits>
-    bool operator!=(basic_string_range<T, Traits> const &left,
-                    basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator!=(basic_string_range<C, T> const &left,
+                    basic_string_range<C, T> const &right)
     {
         return !(left == right);
     }
 
-    template <class T, class Traits>
-    bool operator<(basic_string_range<T, Traits> const &left,
-                   basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator<(basic_string_range<C, T> const &left,
+                   basic_string_range<C, T> const &right)
     {
         return std::lexicographical_compare(left.begin(), left.end(),
-                                            right.begin(), right.end(),
-                                            Traits::lt);
+                                            right.begin(), right.end(), T::lt);
     }
 
-    template <class T, class Traits>
-    bool operator<=(basic_string_range<T, Traits> const &left,
-                    basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator<=(basic_string_range<C, T> const &left,
+                    basic_string_range<C, T> const &right)
     {
         return !(right < left);
     }
 
-    template <class T, class Traits>
-    bool operator>=(basic_string_range<T, Traits> const &left,
-                    basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator>=(basic_string_range<C, T> const &left,
+                    basic_string_range<C, T> const &right)
     {
         return !(left < right);
     }
 
-    template <class T, class Traits>
-    bool operator>(basic_string_range<T, Traits> const &left,
-                   basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator>(basic_string_range<C, T> const &left,
+                   basic_string_range<C, T> const &right)
     {
         return right < left;
     }
 
-    template <class T, class Traits>
-    bool operator==(basic_string_range<T, Traits> const &left, T const *right)
+    template <class C, class T>
+    bool operator==(basic_string_range<C, T> const &left, C const *right)
     {
-        return left == basic_string_range<T, Traits>(right);
+        return left == basic_string_range<C, T>(right);
     }
 
-    template <class T, class Traits>
-    bool operator!=(basic_string_range<T, Traits> const &left, T const *right)
+    template <class C, class T>
+    bool operator!=(basic_string_range<C, T> const &left, C const *right)
     {
         return !(left == right);
     }
 
-    template <class T, class Traits>
-    bool operator<(basic_string_range<T, Traits> const &left, T const *right)
+    template <class C, class T>
+    bool operator<(basic_string_range<C, T> const &left, C const *right)
     {
-        return left < basic_string_range<T, Traits>(right);
+        return left < basic_string_range<C, T>(right);
     }
 
-    template <class T, class Traits>
-    bool operator<=(basic_string_range<T, Traits> const &left, T const *right)
+    template <class C, class T>
+    bool operator<=(basic_string_range<C, T> const &left, C const *right)
     {
         return !(right < left);
     }
 
-    template <class T, class Traits>
-    bool operator>=(basic_string_range<T, Traits> const &left, T const *right)
+    template <class C, class T>
+    bool operator>=(basic_string_range<C, T> const &left, C const *right)
     {
         return !(left < right);
     }
 
-    template <class T, class Traits>
-    bool operator>(basic_string_range<T, Traits> const &left, T const *right)
+    template <class C, class T>
+    bool operator>(basic_string_range<C, T> const &left, C const *right)
     {
         return right < left;
     }
 
-    template <class T, class Traits>
-    bool operator==(T const *left, basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator==(C const *left, basic_string_range<C, T> const &right)
     {
-        return basic_string_range<T, Traits>(left) == right;
+        return basic_string_range<C, T>(left) == right;
     }
 
-    template <class T, class Traits>
-    bool operator!=(T const *left, basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator!=(C const *left, basic_string_range<C, T> const &right)
     {
         return !(left == right);
     }
 
-    template <class T, class Traits>
-    bool operator<(T const *left, basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator<(C const *left, basic_string_range<C, T> const &right)
     {
-        return basic_string_range<T, Traits>(left) < right;
+        return basic_string_range<C, T>(left) < right;
     }
 
-    template <class T, class Traits>
-    bool operator<=(T const *left, basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator<=(C const *left, basic_string_range<C, T> const &right)
     {
         return !(right < left);
     }
 
-    template <class T, class Traits>
-    bool operator>=(T const *left, basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator>=(C const *left, basic_string_range<C, T> const &right)
     {
         return !(left < right);
     }
 
-    template <class T, class Traits>
-    bool operator>(T const *left, basic_string_range<T, Traits> const &right)
+    template <class C, class T>
+    bool operator>(C const *left, basic_string_range<C, T> const &right)
     {
         return right < left;
     }

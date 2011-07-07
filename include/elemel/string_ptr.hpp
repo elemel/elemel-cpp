@@ -10,13 +10,13 @@
 
 namespace elemel {
     namespace detail {
-        template <class Char, class RefCount, class RawAlloc>
+        template <class Char, class RefCount, class RawAllocator>
         class string_header {
         public:
             typedef Char value_type;
             typedef std::size_t size_type;
             typedef RefCount ref_count_type;
-            typedef RawAlloc raw_allocator_type;
+            typedef RawAllocator raw_allocator_type;
     
             static ref_ptr<string_header>
             create(value_type const *str, size_type n,
@@ -75,14 +75,14 @@ namespace elemel {
     template <
         class Char,
         class Traits = std::char_traits<Char>,
-        class RefCount = int,
-        class RawAlloc = raw_new_allocator
+        class RefCount = long,
+        class RawAllocator = raw_new_allocator
     >
     class basic_string_ptr {
     public:
         typedef Char value_type;
         typedef RefCount ref_count_type;
-        typedef RawAlloc raw_allocator_type;
+        typedef RawAllocator raw_allocator_type;
         typedef detail::string_header<value_type, ref_count_type, raw_allocator_type>
             header_type;
         typedef std::size_t size_type;
@@ -164,6 +164,27 @@ namespace elemel {
     }
 
     template <class C, class T, class R, class A>
+    bool operator<=(basic_string_ptr<C, T, R, A> const &left,
+                    basic_string_ptr<C, T, R, A> const &right)
+    {
+        return !(right < left);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator>=(basic_string_ptr<C, T, R, A> const &left,
+                    basic_string_ptr<C, T, R, A> const &right)
+    {
+        return !(left < right);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator>(basic_string_ptr<C, T, R, A> const &left,
+                   basic_string_ptr<C, T, R, A> const &right)
+    {
+        return right < left;
+    }
+
+    template <class C, class T, class R, class A>
     bool operator==(basic_string_ptr<C, T, R, A> const &left, C const *right)
     {
         std::size_t n = find_terminator(right) - right;
@@ -177,6 +198,32 @@ namespace elemel {
     }
 
     template <class C, class T, class R, class A>
+    bool operator<(basic_string_ptr<C, T, R, A> const &left, C const *right)
+    {
+        return std::lexicographical_compare(left.begin(), left.end(),
+                                            right, find_terminator(right),
+                                            T::lt);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator<=(basic_string_ptr<C, T, R, A> const &left, C const *right)
+    {
+        return !(right < left);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator>=(basic_string_ptr<C, T, R, A> const &left, C const *right)
+    {
+        return !(left < right);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator>(basic_string_ptr<C, T, R, A> const &left, C const *right)
+    {
+        return right < left;
+    }
+
+    template <class C, class T, class R, class A>
     bool operator==(C const *left, basic_string_ptr<C, T, R, A> const &right)
     {
         std::size_t n = find_terminator(left) - left;
@@ -187,6 +234,32 @@ namespace elemel {
     bool operator!=(C const *left, basic_string_ptr<C, T, R, A> const &right)
     {
         return !(left == right);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator<(C const *left, basic_string_ptr<C, T, R, A> const &right)
+    {
+        return std::lexicographical_compare(left, find_terminator(left),
+                                            right.begin(), right.end(),
+                                            T::lt);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator<=(C const *left, basic_string_ptr<C, T, R, A> const &right)
+    {
+        return !(right < left);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator>=(C const *left, basic_string_ptr<C, T, R, A> const &right)
+    {
+        return !(left < right);
+    }
+
+    template <class C, class T, class R, class A>
+    bool operator>(C const *left, basic_string_ptr<C, T, R, A> const &right)
+    {
+        return right < left;
     }
 
     typedef basic_string_ptr<char> string_ptr;

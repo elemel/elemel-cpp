@@ -5,6 +5,27 @@
 
 void test_compare()
 {
+    assert(!(elemel::string_range("bar") == elemel::string_range("foo")));
+    assert(elemel::string_range("bar") != elemel::string_range("foo"));
+    assert(elemel::string_range("bar") < elemel::string_range("foo"));
+    assert(elemel::string_range("bar") <= elemel::string_range("foo"));
+    assert(!(elemel::string_range("bar") >= elemel::string_range("foo")));
+    assert(!(elemel::string_range("bar") > elemel::string_range("foo")));
+
+    assert(!(elemel::string_range("bar") == "foo"));
+    assert(elemel::string_range("bar") != "foo");
+    assert(elemel::string_range("bar") < "foo");
+    assert(elemel::string_range("bar") <= "foo");
+    assert(!(elemel::string_range("bar") >= "foo"));
+    assert(!(elemel::string_range("bar") > "foo"));
+
+    assert(!("bar" == elemel::string_range("foo")));
+    assert("bar" != elemel::string_range("foo"));
+    assert("bar" < elemel::string_range("foo"));
+    assert("bar" <= elemel::string_range("foo"));
+    assert(!("bar" >= elemel::string_range("foo")));
+    assert(!("bar" > elemel::string_range("foo")));
+
     assert(elemel::string_range("foo") == elemel::string_range("foo"));
     assert(!(elemel::string_range("foo") != elemel::string_range("foo")));
     assert(!(elemel::string_range("foo") < elemel::string_range("foo")));
