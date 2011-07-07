@@ -1,8 +1,6 @@
 #ifndef ELEMEL_STRING_RANGE_HPP
 #define ELEMEL_STRING_RANGE_HPP
 
-#include <elemel/find_terminator.hpp>
-
 #include <algorithm>
 #include <string>
 
@@ -23,7 +21,7 @@ namespace elemel {
 
         basic_string_range(const_pointer str) :
             first_(str),
-            last_(find_terminator(str))
+            last_(str + Traits::length(str))
         { }
 
         basic_string_range(const_pointer first, const_pointer last) :

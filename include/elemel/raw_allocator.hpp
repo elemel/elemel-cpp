@@ -1,6 +1,9 @@
 #ifndef ELEMEL_RAW_ALLOCATOR_HPP
 #define ELEMEL_RAW_ALLOCATOR_HPP
 
+#include <cstddef>
+#include <cstdlib>
+
 namespace elemel {
     class raw_new_allocator {
     public:

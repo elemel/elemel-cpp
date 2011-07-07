@@ -1,12 +1,12 @@
 #ifndef ELEMEL_STRING_PTR_HPP
 #define ELEMEL_STRING_PTR_HPP
 
-#include <elemel/find_terminator.hpp>
 #include <elemel/raw_allocator.hpp>
 #include <elemel/ref_ptr.hpp>
 
 #include <algorithm>
 #include <cassert>
+#include <string>
 
 namespace elemel {
     namespace detail {
@@ -81,6 +81,7 @@ namespace elemel {
     class basic_string_ptr {
     public:
         typedef Char value_type;
+        typedef Traits traits_type;
         typedef RefCount ref_count_type;
         typedef RawAllocator raw_allocator_type;
         typedef detail::string_header<value_type, ref_count_type, raw_allocator_type>
@@ -99,7 +100,7 @@ namespace elemel {
                                   raw_allocator_type())
         {
             assert(str);
-            size_type n = find_terminator(str) - str;
+            size_type n = Traits::length(str);
             header_ = header_type::create(str, n, alloc);
         }
 
@@ -187,7 +188,8 @@ namespace elemel {
     template <class C, class T, class R, class A>
     bool operator==(basic_string_ptr<C, T, R, A> const &left, C const *right)
     {
-        std::size_t n = find_terminator(right) - right;
+        assert(right);
+        std::size_t n = T::length(right);
         return left.size() == n && std::equal(left.begin(), left.end(), right);
     }
 
@@ -200,8 +202,9 @@ namespace elemel {
     template <class C, class T, class R, class A>
     bool operator<(basic_string_ptr<C, T, R, A> const &left, C const *right)
     {
+        assert(right);
         return std::lexicographical_compare(left.begin(), left.end(),
-                                            right, find_terminator(right),
+                                            right, right + T::length(right),
                                             T::lt);
     }
 
@@ -226,7 +229,8 @@ namespace elemel {
     template <class C, class T, class R, class A>
     bool operator==(C const *left, basic_string_ptr<C, T, R, A> const &right)
     {
-        std::size_t n = find_terminator(left) - left;
+        assert(left);
+        std::size_t n = T::length(left);
         return n == right.size() && std::equal(left, left + n, right.begin());
     }
 
@@ -239,7 +243,8 @@ namespace elemel {
     template <class C, class T, class R, class A>
     bool operator<(C const *left, basic_string_ptr<C, T, R, A> const &right)
     {
-        return std::lexicographical_compare(left, find_terminator(left),
+        assert(left);
+        return std::lexicographical_compare(left, left + T::length(left),
                                             right.begin(), right.end(),
                                             T::lt);
     }
