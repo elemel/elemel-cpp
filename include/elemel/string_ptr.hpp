@@ -44,17 +44,17 @@ namespace elemel {
                 }
             }
     
-            size_type size()
-            {
-                return size_;
-            }
-    
             value_type *data()
             {
                 return reinterpret_cast<value_type *>(reinterpret_cast<unsigned char *>(this) +
                                                       sizeof(string_impl));
             }
-    
+
+            size_type size()
+            {
+                return size_;
+            }
+
         private:
             size_type size_;
             raw_allocator_type alloc_;
@@ -87,7 +87,8 @@ namespace elemel {
         typedef detail::string_impl<value_type, ref_count_type, raw_allocator_type>
             impl_type;
         typedef std::size_t size_type;
-        typedef value_type *const_iterator;
+        typedef value_type const *const_pointer;
+        typedef value_type const *const_iterator;
 
         explicit basic_string_ptr(raw_allocator_type const &alloc =
                                   raw_allocator_type())
@@ -111,17 +112,17 @@ namespace elemel {
             impl_ = impl_type::create(str, n, alloc);
         }
 
+        const_pointer data() const
+        {
+            return impl_->data();
+        }
+
         size_type size() const
         {
             return impl_->size();
         }
 
-        value_type const *data() const
-        {
-            return impl_->data();
-        }
-
-        value_type const *c_str() const
+        const_pointer c_str() const
         {
             return impl_->data();
         }

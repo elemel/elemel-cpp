@@ -24,19 +24,24 @@ namespace elemel {
             last_(str + Traits::length(str))
         { }
 
+        basic_string_range(const_pointer str, size_type n) :
+            first_(str),
+            last_(str + n)
+        { }
+
         basic_string_range(const_pointer first, const_pointer last) :
             first_(first),
             last_(last)
         { }
 
-        size_type size() const
-        {
-            return last_ - first_;
-        }
-
         const_pointer data() const
         {
             return first_;
+        }
+
+        size_type size() const
+        {
+            return last_ - first_;
         }
 
         const_iterator begin() const
