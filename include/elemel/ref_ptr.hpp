@@ -72,6 +72,8 @@ namespace elemel {
 
     private:
         element_type *ptr_;
+
+        operator int() const;
     };
 }
 
