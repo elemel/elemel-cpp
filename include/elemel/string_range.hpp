@@ -2,6 +2,7 @@
 #define ELEMEL_STRING_RANGE_HPP
 
 #include <algorithm>
+#include <stdexcept>
 #include <string>
 
 namespace elemel {
@@ -12,6 +13,7 @@ namespace elemel {
         typedef Traits traits_type;
         typedef std::size_t size_type;
         typedef value_type const *const_pointer;
+        typedef value_type const &const_reference;
         typedef value_type const *const_iterator;
 
         basic_string_range() :
@@ -44,6 +46,11 @@ namespace elemel {
             return last_ - first_;
         }
 
+        bool empty() const
+        {
+            return first_ != last_;
+        }
+
         const_iterator begin() const
         {
             return first_;
@@ -52,6 +59,32 @@ namespace elemel {
         const_iterator end() const
         {
             return last_;
+        }
+
+        const_reference front() const
+        {
+            assert(!empty());
+            return *first_;
+        }
+
+        const_reference back() const
+        {
+            assert(!empty());
+            return *(last_ - 1);
+        }
+
+        const_reference operator[](size_type index) const
+        {
+            assert(index < size());
+            return first_[index];
+        }
+
+        const_reference at(size_type index) const
+        {
+            if (index >= size()) {
+                throw std::out_of_range("index out of range");
+            }
+            return first_[index];
         }
 
     private:
