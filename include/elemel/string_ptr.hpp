@@ -33,16 +33,22 @@ namespace elemel {
             impl_(impl_type::create(0, 0, alloc))
         { }
 
-        explicit basic_string_ptr(value_type const *str,
+        explicit basic_string_ptr(const_pointer str,
                                   raw_allocator_type const &alloc =
                                   raw_allocator_type()) :
             impl_(impl_type::create(str, Traits::length(str), alloc))
         { }
 
-        basic_string_ptr(value_type const *str, size_type n,
+        basic_string_ptr(const_pointer str, size_type n,
                          raw_allocator_type const &alloc =
                          raw_allocator_type()) :
             impl_(impl_type::create(str, n, alloc))
+        { }
+
+        basic_string_ptr(const_pointer first, const_pointer last,
+                         raw_allocator_type const &alloc =
+                         raw_allocator_type()) :
+            impl_(impl_type::create(first, last - first, alloc))
         { }
 
         const_pointer data() const
