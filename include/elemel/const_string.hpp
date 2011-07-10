@@ -39,14 +39,33 @@ namespace elemel {
                                     raw_allocator_type const &alloc =
                                     raw_allocator_type()) :
             impl_(impl_type::create(str, traits_type::length(str), alloc)),
-            range_(range_type(impl_->data(), impl_->data() + impl_->size()))
+            range_(impl_->data(), impl_->data() + impl_->size())
         { }
 
         basic_const_string(const_pointer str, size_type n,
                            raw_allocator_type const &alloc =
                            raw_allocator_type()) :
             impl_(impl_type::create(str, n, alloc)),
-            range_(range_type(impl_->data(), impl_->data() + impl_->size()))
+            range_(impl_->data(), impl_->data() + impl_->size())
+        { }
+
+        basic_const_string(const_pointer first, const_pointer last,
+                           raw_allocator_type const &alloc =
+                           raw_allocator_type()) :
+            impl_(impl_type::create(first, last - first, alloc)),
+            range_(impl_->data(), impl_->data() + impl_->size())
+        { }
+
+        basic_const_string(const_pointer str, by_ref_tag) :
+            range_(str, traits_type::length(str))
+        { }
+
+        basic_const_string(const_pointer str, size_type n, by_ref_tag) :
+            range_(str, n)
+        { }
+
+        basic_const_string(const_pointer first, const_pointer last, by_ref_tag)
+            : range_(first, last - first)
         { }
 
         const_pointer data() const
@@ -57,6 +76,11 @@ namespace elemel {
         size_type size() const
         {
             return range_.size();
+        }
+
+        bool empty() const
+        {
+            return range_.empty();
         }
 
         const_iterator begin() const
